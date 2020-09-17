@@ -15,6 +15,8 @@ export const getRecipe = async (req: Request, res: Response) => {
         const recipeDatabase = new RecipesDatabase()
         const recipe = await recipeDatabase.getRecipeById(id)
 
+        console.log(recipe)
+
         res.status(200).send({
             id: recipe.id,
             title: recipe.title,

@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { BaseDatabase } from "./BaseDatabase";
 
 
@@ -30,6 +31,20 @@ export class UserDatabase extends BaseDatabase {
         .from(UserDatabase.TABLE_NAME)
         .where("id", id)
 
+        return response[0]
+    }
+
+    public async getFeedById (user_id: string): Promise<any> {
+        const response = await this.getConnection()
+        .raw(`
+            SELECT CookenuRecipes.id, title, description, creation_date as createdAt, CookenuRecipes.user_id as userId, CookenuUsers.name
+            FROM CookenuUsers
+            JOIN CookenuRecipes on CookenuUsers.id = CookenuRecipes.user_id
+            JOIN CookenuFollowing on CookenuRecipes.user_id = CookenuFollowing.user_to_follow_id
+            WHERE CookenuFollowing.user_id = "${user_id}"
+            ORDER BY CookenuRecipes.creation_date DESC;
+        `)
+        console.log(response[0])
         return response[0]
     }
 }
