@@ -22,11 +22,11 @@ export const createRecipe = async (req: Request, res: Response) => {
         const idGenerator = new IdGenerator()
         const newId = idGenerator.generateId()
 
-        const recipesDatabase = new RecipesDatabase()
-        await recipesDatabase.createRecipe(newId, recipeData.title, recipeData.description, recipeData.creation_date)
-
         const authenticator = new Authenticator()
-        authenticator.getData(token)
+        const user = authenticator.getData(token)
+
+        const recipesDatabase = new RecipesDatabase()
+        await recipesDatabase.createRecipe(newId, recipeData.title, recipeData.description, recipeData.creation_date, user.id)
 
         res.status(200).send({
             message: "Receita criada com sucesso!"
