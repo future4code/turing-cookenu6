@@ -47,7 +47,7 @@ export class UserDatabase extends BaseDatabase {
             WHERE CookenuFollowing.user_id = "${user_id}"
             ORDER BY CookenuRecipes.creation_date DESC;
         `)
-        console.log(response[0])
+
         return response[0]
     }
 
