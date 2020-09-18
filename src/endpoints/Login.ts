@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { BaseDatabase } from "../data/BaseDatabase";
 import { UserDatabase } from "../data/UserDatabase";
-import { Authenticator } from "../services/Authenticator";
+import { Authenticator, ROLE_TYPE } from "../services/Authenticator";
 import { HashManager } from "../services/HashManager";
 
 export const login = async (req: Request, res: Response) => {
@@ -26,7 +26,7 @@ export const login = async (req: Request, res: Response) => {
         }
 
         const authenticator = new Authenticator()
-        const token = authenticator.generateToken({id: user.id, email: user.email})
+        const token = authenticator.generateToken({id:user.id, email:user.email, role:user.role})
 
         res.status(200).send({
             message: "Usuário logado com sucesso!",

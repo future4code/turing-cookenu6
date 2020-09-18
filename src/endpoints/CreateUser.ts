@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { BaseDatabase } from "../data/BaseDatabase";
 import { UserDatabase } from "../data/UserDatabase";
-import { Authenticator } from "../services/Authenticator";
+import { Authenticator, ROLE_TYPE } from "../services/Authenticator";
 import { HashManager } from "../services/HashManager";
 import { IdGenerator } from "../services/IdGenerator";
 
@@ -22,8 +22,18 @@ export const createUser = async (req: Request, res: Response) => {
         const userData = {
             name: req.body.name,
             email: req.body.email,
-            password: req.body.password
+            password: req.body.password,
+            role: req.body.role
         }
+
+        if(!userData.role) {
+            userData.role = ROLE_TYPE.NORMAL
+        }
+        
+        if (userData.role !== ROLE_TYPE.ADMIN && userData.role !== ROLE_TYPE.NORMAL) {
+            throw new Error ("Parâmetro ROLE precisa ser NORMAL ou ADMIN!")
+        }
+        
 
         const idGenerator = new IdGenerator()
         const newId = idGenerator.generateId()
@@ -32,12 +42,13 @@ export const createUser = async (req: Request, res: Response) => {
         const cypherPassword = await hashManager.hash(userData.password)
 
         const userDatabase = new UserDatabase()
-        await userDatabase.createUser(newId, userData.name, userData.email, cypherPassword)
+        await userDatabase.createUser(newId, userData.name, userData.email, cypherPassword, userData.role)
 
         const authenticator = new Authenticator()
         const token = authenticator.generateToken({
             id: newId,
-            email: userData.email
+            email: userData.email,
+            role: userData.role
         })
 
         res.status(200).send({
