@@ -1,17 +1,20 @@
 import dayjs from "dayjs";
+import { ROLE_TYPE } from "../services/Authenticator";
 import { BaseDatabase } from "./BaseDatabase";
+import { FollowingDatabase } from "./FollowingDatabase";
 
 
 export class UserDatabase extends BaseDatabase {
     private static TABLE_NAME = "CookenuUsers"
 
-    public async createUser(id: string, name: string, email: string, password: string): Promise<void> {
+    public async createUser(id: string, name: string, email: string, password: string, role?: ROLE_TYPE): Promise<void> {
         await this.getConnection()
         .insert({
             id,
             name,
             email,
-            password
+            password,
+            role
         })
         .into(UserDatabase.TABLE_NAME)
     }
@@ -44,7 +47,25 @@ export class UserDatabase extends BaseDatabase {
             WHERE CookenuFollowing.user_id = "${user_id}"
             ORDER BY CookenuRecipes.creation_date DESC;
         `)
-        console.log(response[0])
+
         return response[0]
+    }
+
+    public async deleteUser (user_id: string): Promise<void> {
+        await this.getConnection()
+        .delete("*")
+        .from("CookenuFollowing")
+        .where("user_id", user_id)
+        .orWhere("user_to_follow_id", user_id)
+
+        await this.getConnection()
+        .delete("*")
+        .from("CookenuRecipes")
+        .where("user_id", user_id)
+        
+        await this.getConnection()
+        .delete("*")
+        .from(UserDatabase.TABLE_NAME)
+        .where("id", user_id)        
     }
 }

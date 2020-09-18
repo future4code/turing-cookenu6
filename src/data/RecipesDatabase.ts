@@ -24,4 +24,20 @@ export class RecipesDatabase extends BaseDatabase {
 
         return response[0]
     }
+
+    public async deleteRecipeById(id: string): Promise<void> {
+        await this.getConnection()
+        .delete("*")
+        .from(RecipesDatabase.TABLE_NAME)
+        .where("id", id)
+    }
+
+    public async editRecipeById(id: string, title: string, description:string): Promise<void> {
+        await this.getConnection()
+        .raw(`
+            UPDATE ${RecipesDatabase.TABLE_NAME}
+            SET title = "${title}", description = "${description}"
+            WHERE id = "${id}";
+        `)    
+    }
 }

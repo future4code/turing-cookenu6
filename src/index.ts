@@ -10,6 +10,9 @@ import { userFeed } from './endpoints/UserFeed';
 import { getUserProfile } from './endpoints/GetUserProfile';
 import { login } from './endpoints/Login';
 import { unFollowUser } from './endpoints/UnfollowUser';
+import { deleteRecipe } from './endpoints/DeleteRecipe';
+import { editRecipe } from './endpoints/EditRecipe';
+import { deleteUser } from './endpoints/DeleteUser';
 
 dotenv.config();
 
@@ -28,10 +31,13 @@ const server = app.listen(process.env.DB_PORT || 3003, () => {
 
 app.post('/signup', createUser)
 app.post('/login', login)
+app.delete('/user/delete', deleteUser)
 app.get('/user/profile', getProfile)
-app.get('/user/:id', getUserProfile)
-app.post('/recipe', createRecipe)
-app.get('/recipe/:id', getRecipe)
+app.get('/user/feed', userFeed)
 app.post('/user/follow', followUser)
 app.post('/user/unfollow', unFollowUser)
-app.get('/feed', userFeed)
+app.get('/user/:id', getUserProfile)
+app.post('/recipe', createRecipe)
+app.put('/recipe/edit', editRecipe)
+app.delete('/recipe/delete', deleteRecipe)
+app.get('/recipe/:id', getRecipe)
